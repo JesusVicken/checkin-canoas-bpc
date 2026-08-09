@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/db'
-import { createSession, destroySession } from '@/lib/session'
+import { createSession, destroySession, getSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import bcrypt from 'bcryptjs'
 
@@ -142,4 +142,54 @@ export async function loginAction(
 export async function logoutAction(): Promise<void> {
   await destroySession()
   redirect('/')
+}
+
+export async function changePasswordAction(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const session = await getSession()
+  if (!session) {
+    return { error: 'Não autorizado. Faça login novamente.' }
+  }
+
+  const currentPassword = formData.get('currentPassword') as string
+  const newPassword = formData.get('newPassword') as string
+
+  if (!currentPassword || !newPassword) {
+    return { error: 'Preencha a senha atual e a nova senha.' }
+  }
+
+  if (newPassword.length < 4) {
+    return { error: 'A nova senha deve ter pelo menos 4 caracteres.' }
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId }
+    })
+
+    if (!user) {
+      return { error: 'Usuário não encontrado.' }
+    }
+
+    if (user.password) {
+      const isValid = await bcrypt.compare(currentPassword, user.password)
+      if (!isValid) {
+        return { error: 'A senha atual está incorreta.' }
+      }
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10)
+
+    await prisma.user.update({
+      where: { id: session.userId },
+      data: { password: hashedNewPassword }
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Change password error:', error)
+    return { error: 'Erro ao alterar senha. Tente novamente.' }
+  }
 }

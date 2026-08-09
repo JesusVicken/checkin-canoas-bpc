@@ -21,7 +21,13 @@ export default async function DashboardPage({
 
   return (
     <div className="flex min-h-screen flex-col bg-ocean-gradient">
-      <Header userName={session.userName} />
+      <Header 
+        user={{
+          name: session.userName,
+          email: session.userEmail || '',
+          phone: session.userPhone || ''
+        }} 
+      />
 
       {/* Mobile App Container max-w-lg */}
       <main className="mx-auto w-full max-w-lg flex-1 px-3.5 py-4">
