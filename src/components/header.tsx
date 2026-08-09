@@ -8,6 +8,7 @@ interface UserProps {
   name: string
   email: string
   phone: string
+  avatarUrl?: string | null
 }
 
 export function Header({ user }: { user: UserProps }) {
@@ -16,6 +17,14 @@ export function Header({ user }: { user: UserProps }) {
 
   const [passwordState, changePasswordFormAction, isChangingPassword] = useActionState<AuthState, FormData>(
     changePasswordAction,
+    {}
+  )
+
+  const [uploadState, uploadFormAction, isUploading] = useActionState<any, FormData>(
+    async (prevState: any, formData: FormData) => {
+      const { uploadAvatarAction } = await import('@/actions/profile')
+      return uploadAvatarAction(prevState, formData)
+    },
     {}
   )
 
@@ -57,10 +66,16 @@ export function Header({ user }: { user: UserProps }) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowProfile(true)}
-              className="flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200/80 px-3 py-1 text-xs font-bold text-blue-900 shadow-2xs hover:bg-blue-100 transition-colors"
+              className="flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200/80 p-1 pr-3 text-xs font-bold text-blue-900 shadow-2xs hover:bg-blue-100 transition-colors"
               title="Ver Perfil"
             >
-              <span className="text-xs">👤</span>
+              {user.avatarUrl ? (
+                <div className="relative w-6 h-6 rounded-full overflow-hidden border border-blue-200">
+                  <Image src={user.avatarUrl} alt="Avatar" fill className="object-cover" />
+                </div>
+              ) : (
+                <span className="w-6 h-6 flex items-center justify-center bg-blue-100 rounded-full text-[10px]">👤</span>
+              )}
               <span className="max-w-[80px] truncate">{user.name.split(' ')[0]}</span>
             </button>
             <form action={logoutAction}>
@@ -95,9 +110,31 @@ export function Header({ user }: { user: UserProps }) {
               </button>
             </div>
 
-            {/* Read-only User Data */}
+            {/* Read-only User Data & Avatar Upload */}
             {!showChangePassword && (
               <div className="space-y-4">
+                <div className="flex flex-col items-center justify-center space-y-3 mb-2">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-blue-50 bg-slate-100 shadow-sm flex items-center justify-center">
+                    {user.avatarUrl ? (
+                      <Image src={user.avatarUrl} alt="Profile" fill className="object-cover" />
+                    ) : (
+                      <span className="text-4xl">👤</span>
+                    )}
+                  </div>
+                  
+                  <form action={uploadFormAction} className="flex flex-col items-center gap-2">
+                    <label className="cursor-pointer bg-blue-50 text-blue-700 text-[10px] font-extrabold uppercase tracking-widest px-4 py-2 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors shadow-2xs">
+                      {isUploading ? 'Enviando...' : 'Mudar Foto'}
+                      <input type="file" name="avatar" accept="image/*" className="hidden" onChange={(e) => {
+                        if (e.target.files?.length) {
+                          e.target.form?.requestSubmit()
+                        }
+                      }} disabled={isUploading} />
+                    </label>
+                    {uploadState?.error && <span className="text-[10px] text-rose-500 font-bold">{uploadState.error}</span>}
+                  </form>
+                </div>
+
                 <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nome</p>
                   <p className="text-sm font-black text-slate-800">{user.name}</p>

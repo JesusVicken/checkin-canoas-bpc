@@ -133,7 +133,7 @@ export async function getAvailability(dateStr: string) {
       status: 'CONFIRMED',
     },
     include: {
-      user: { select: { name: true } },
+      user: { select: { name: true, avatarUrl: true } },
       canoe: { select: { id: true, name: true, type: true, capacity: true } },
     },
     orderBy: [{ startTime: 'asc' }, { canoe: { name: 'asc' } }],
@@ -149,12 +149,13 @@ export async function getAvailability(dateStr: string) {
     startTime: r.startTime,
     endTime: r.endTime,
     userName: r.user.name,
+    userAvatarUrl: r.user.avatarUrl,
   }))
 
   // Map: canoeId -> array of startTimes
   const reservedMap: Record<string, string[]> = {}
-  // Map: canoeId -> Record<startTime, userName>
-  const reservedDetails: Record<string, Record<string, string>> = {}
+  // Map: canoeId -> Record<startTime, { name: string, avatarUrl: string | null }>
+  const reservedDetails: Record<string, Record<string, { name: string, avatarUrl: string | null }>> = {}
 
   for (const r of reservations) {
     if (!reservedMap[r.canoeId]) {
@@ -165,7 +166,7 @@ export async function getAvailability(dateStr: string) {
     if (!reservedDetails[r.canoeId]) {
       reservedDetails[r.canoeId] = {}
     }
-    reservedDetails[r.canoeId][r.startTime] = r.user.name
+    reservedDetails[r.canoeId][r.startTime] = { name: r.user.name, avatarUrl: r.user.avatarUrl }
   }
 
   return {

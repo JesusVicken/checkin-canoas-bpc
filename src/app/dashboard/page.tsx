@@ -19,13 +19,18 @@ export default async function DashboardPage({
   const { canoes, reservations, reservedMap, reservedDetails } = await getAvailability(selectedDate)
   const userReservations = await getUserReservations()
 
+  // Fetch full user for avatar
+  const { prisma } = await import('@/lib/db')
+  const user = await prisma.user.findUnique({ where: { id: session.userId } })
+
   return (
     <div className="flex min-h-screen flex-col bg-ocean-gradient">
       <Header 
         user={{
           name: session.userName,
           email: session.userEmail || '',
-          phone: session.userPhone || ''
+          phone: session.userPhone || '',
+          avatarUrl: user?.avatarUrl || null
         }} 
       />
 

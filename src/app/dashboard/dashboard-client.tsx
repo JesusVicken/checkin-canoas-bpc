@@ -26,6 +26,7 @@ interface DailyReservation {
   startTime: string
   endTime: string
   userName: string
+  userAvatarUrl?: string | null
 }
 
 interface DashboardClientProps {
@@ -43,7 +44,7 @@ interface DashboardClientProps {
     }
   }>
   reservedMap: Record<string, string[]>
-  reservedDetails: Record<string, Record<string, string>>
+  reservedDetails: Record<string, Record<string, { name: string, avatarUrl: string | null }>>
   selectedDate: string
   userId: string
 }
@@ -118,7 +119,8 @@ export function DashboardClient({
     const isReserved = reservedDetails[canoe.id]?.[filterTime]
     return {
       ...canoe,
-      reservedBy: isReserved || null,
+      reservedBy: isReserved?.name || null,
+      reservedAvatarUrl: isReserved?.avatarUrl || null,
     }
   })
 
@@ -399,8 +401,13 @@ export function DashboardClient({
                         <p className="text-xs font-black text-slate-900">
                           {canoe.name}
                         </p>
-                        <p className="text-[11px] font-bold text-blue-800">
-                          👤 {canoe.reservedBy}
+                        <p className="text-[11px] font-bold text-blue-800 flex items-center gap-1.5">
+                          {canoe.reservedAvatarUrl ? (
+                            <img src={canoe.reservedAvatarUrl} alt={canoe.reservedBy || ''} className="w-4 h-4 rounded-full object-cover border border-blue-200" />
+                          ) : (
+                            <span>👤</span>
+                          )}
+                          {canoe.reservedBy}
                         </p>
                       </div>
                     </div>
@@ -496,8 +503,13 @@ export function DashboardClient({
                           ({res.canoeType})
                         </span>
                       </p>
-                      <p className="text-xs font-bold text-blue-800 mt-0.5">
-                        👤 {res.userName}
+                      <p className="text-[11px] font-bold text-blue-800 mt-0.5 flex items-center gap-1.5">
+                        {res.userAvatarUrl ? (
+                          <img src={res.userAvatarUrl} alt={res.userName} className="w-4 h-4 rounded-full object-cover border border-blue-200" />
+                        ) : (
+                          <span>👤</span>
+                        )}
+                        {res.userName}
                       </p>
                     </div>
                   </div>
