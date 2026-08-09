@@ -1,0 +1,64 @@
+// BPC - Sistema de Reserva de Canoas Havaianas/Polinésias
+// Prisma Schema for Neon PostgreSQL
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  phone        String?
+  email        String?       @unique
+  password     String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  reservations Reservation[]
+
+  @@map("users")
+}
+
+model Canoe {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  type         CanoeType
+  capacity     Int
+  active       Boolean       @default(true)
+  reservations Reservation[]
+
+  @@map("canoes")
+}
+
+model Reservation {
+  id        String            @id @default(cuid())
+  date      DateTime          @db.Date
+  startTime String            @map("start_time")
+  endTime   String            @map("end_time")
+  status    ReservationStatus  @default(CONFIRMED)
+  userId    String            @map("user_id")
+  canoeId   String            @map("canoe_id")
+  user      User              @relation(fields: [userId], references: [id])
+  canoe     Canoe             @relation(fields: [canoeId], references: [id])
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  @@unique([canoeId, date, startTime])
+  @@map("reservations")
+}
+
+enum CanoeType {
+  V1
+  OC2
+  V3
+  V6
+  OC6
+}
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+}
