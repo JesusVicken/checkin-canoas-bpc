@@ -20,13 +20,34 @@ export function Header({ user }: { user: UserProps }) {
     {}
   )
 
-  const [uploadState, uploadFormAction, isUploading] = useActionState<any, FormData>(
-    async (prevState: any, formData: FormData) => {
-      const { uploadAvatarAction } = await import('@/actions/profile')
-      return uploadAvatarAction(prevState, formData)
-    },
-    {}
-  )
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+
+  const handleFileUpload = async (file: File) => {
+    setIsUploading(true)
+    setUploadError(null)
+
+    try {
+      const response = await fetch(`/api/avatar/upload?filename=${encodeURIComponent(file.name)}`, {
+        method: 'POST',
+        body: file,
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setUploadError(data.error || 'Erro ao enviar a imagem.')
+      } else {
+        // Refresh page to get new avatarUrl
+        window.location.reload()
+      }
+    } catch (err) {
+      console.error('File upload error:', err)
+      setUploadError('Erro ao enviar a foto.')
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   // Reset states if modal closes or success
   useEffect(() => {
@@ -122,17 +143,23 @@ export function Header({ user }: { user: UserProps }) {
                     )}
                   </div>
                   
-                  <form action={uploadFormAction} className="flex flex-col items-center gap-2">
+                  <div className="flex flex-col items-center gap-2">
                     <label className="cursor-pointer bg-blue-50 text-blue-700 text-[10px] font-extrabold uppercase tracking-widest px-4 py-2 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors shadow-2xs">
                       {isUploading ? 'Enviando...' : 'Mudar Foto'}
-                      <input type="file" name="avatar" accept="image/*" className="hidden" onChange={(e) => {
-                        if (e.target.files?.length) {
-                          e.target.form?.requestSubmit()
-                        }
-                      }} disabled={isUploading} />
+                      <input
+                        type="file"
+                        accept="image/jpeg, image/png, image/webp"
+                        className="hidden"
+                        disabled={isUploading}
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) {
+                            handleFileUpload(e.target.files[0])
+                          }
+                        }}
+                      />
                     </label>
-                    {uploadState?.error && <span className="text-[10px] text-rose-500 font-bold">{uploadState.error}</span>}
-                  </form>
+                    {uploadError && <span className="text-[10px] text-rose-500 font-bold">{uploadError}</span>}
+                  </div>
                 </div>
 
                 <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
