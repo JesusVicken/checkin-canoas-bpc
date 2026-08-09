@@ -92,7 +92,8 @@ export function Header({ user }: { user: UserProps }) {
             >
               {user.avatarUrl ? (
                 <div className="relative w-6 h-6 rounded-full overflow-hidden border border-blue-200">
-                  <Image src={user.avatarUrl} alt="Avatar" fill className="object-cover" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <span className="w-6 h-6 flex items-center justify-center bg-blue-100 rounded-full text-[10px]">👤</span>
@@ -137,7 +138,8 @@ export function Header({ user }: { user: UserProps }) {
                 <div className="flex flex-col items-center justify-center space-y-3 mb-2">
                   <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-blue-50 bg-slate-100 shadow-sm flex items-center justify-center">
                     {user.avatarUrl ? (
-                      <Image src={user.avatarUrl} alt="Profile" fill className="object-cover" />
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={user.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-4xl">👤</span>
                     )}
