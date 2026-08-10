@@ -28,7 +28,7 @@ export async function createReservation(
     return { error: 'Dados incompletos. Tente novamente.' }
   }
 
-  const date = new Date(dateStr + 'T00:00:00.000Z')
+  const date = new Date(dateStr + 'T12:00:00.000Z')
   const endTime = getEndTime(startTime)
 
   try {
@@ -120,7 +120,7 @@ export async function cancelReservation(
 }
 
 export async function getAvailability(dateStr: string) {
-  const date = new Date(dateStr + 'T00:00:00.000Z')
+  const date = new Date(dateStr + 'T12:00:00.000Z')
 
   const canoes = await prisma.canoe.findMany({
     where: { active: true },
@@ -181,11 +181,14 @@ export async function getUserReservations() {
   const session = await getSession()
   if (!session) return []
 
+  const todayStr = new Date().toLocaleDateString('en-CA')
+  const startOfToday = new Date(todayStr + 'T00:00:00.000Z')
+
   return prisma.reservation.findMany({
     where: {
       userId: session.userId,
       status: 'CONFIRMED',
-      date: { gte: new Date(new Date().toISOString().split('T')[0] + 'T00:00:00.000Z') },
+      date: { gte: startOfToday },
     },
     include: {
       canoe: true,

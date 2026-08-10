@@ -72,12 +72,18 @@ export function DashboardClient({
   )
 
   // Show modal on success
-  if (state.success && !showSuccessModal && !isPending) {
-    setShowSuccessModal(true)
-    // Clear state or handle it so it doesn't loop, but React state might trigger re-renders. 
-    // Actually, `useActionState` keeps `state.success` true until next submit. 
-    // A simple way is to use useEffect, but for server actions it's tricky.
-    // Let's rely on the button click below to clear it.
+  useEffect(() => {
+    if (state.success && !isPending) {
+      setShowSuccessModal(true)
+    }
+  }, [state, isPending])
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false)
+    state.success = false
+    setSelectedCanoe(null)
+    setSelectedSlot(null)
+    setActiveTab('my-reservations')
   }
 
   useEffect(() => {
@@ -185,10 +191,7 @@ export function DashboardClient({
               <span className="font-bold text-rose-600">Aviso importante:</span> Se você não for usar a canoa, cancele o agendamento o quanto antes na aba "Minhas Reservas" para liberar a canoa para outros alunos.
             </p>
             <button
-              onClick={() => {
-                setShowSuccessModal(false)
-                setActiveTab('my-reservations')
-              }}
+              onClick={handleCloseSuccessModal}
               className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl mt-2 active:scale-95 transition-all"
             >
               Entendido

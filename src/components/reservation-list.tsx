@@ -55,6 +55,7 @@ export function ReservationList({ reservations }: { reservations: Reservation[] 
           weekday: 'short',
           day: '2-digit',
           month: '2-digit',
+          timeZone: 'UTC',
         })
         const emoji = CANOE_TYPE_EMOJIS[r.canoe.type] || '🛶'
 
