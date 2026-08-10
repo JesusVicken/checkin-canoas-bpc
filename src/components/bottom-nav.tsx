@@ -42,7 +42,7 @@ export function BottomNav({
           <span className="text-[10px] font-extrabold mt-1 tracking-tight">Status</span>
         </button>
 
-        {/* Tab 3: Quadro */}
+        {/* Tab 3: Todas as Reservas */}
         <button
           type="button"
           onClick={() => onSelectTab('all')}
@@ -53,7 +53,7 @@ export function BottomNav({
           }`}
         >
           <span className="text-lg leading-none">📋</span>
-          <span className="text-[10px] font-extrabold mt-1 tracking-tight">Quadro</span>
+          <span className="text-[10px] font-extrabold mt-1 tracking-tight">Todas</span>
         </button>
 
         {/* Tab 4: Minhas Reservas */}

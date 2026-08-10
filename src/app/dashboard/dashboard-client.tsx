@@ -140,7 +140,7 @@ export function DashboardClient({
       <div 
         className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black transition-opacity duration-500"
         style={{
-          backgroundImage: 'url("/background.jpg")',
+          backgroundImage: 'url("/hero.jpeg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -475,12 +475,12 @@ export function DashboardClient({
         </div>
       )}
 
-      {/* TAB 3: QUADRO GERAL DO DIA */}
+      {/* TAB 3: TODAS AS RESERVAS DO DIA */}
       {activeTab === 'all' && (
         <div className="glass-card rounded-3xl p-4 space-y-4 animate-in fade-in">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-extrabold text-blue-950 flex items-center gap-1.5">
-              <span>📋</span> Agenda Completa ({reservations.length})
+              <span>📋</span> Todas as Reservas ({reservations.length})
             </h3>
           </div>
 

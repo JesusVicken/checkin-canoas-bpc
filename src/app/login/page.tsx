@@ -10,7 +10,7 @@ export default async function LoginPage() {
     <div
       className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6"
       style={{
-        backgroundImage: 'url("/background.jpg")',
+        backgroundImage: 'url("/hero.jpeg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
