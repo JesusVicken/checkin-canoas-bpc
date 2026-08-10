@@ -74,6 +74,8 @@ export function DashboardClient({
   // Show modal on success
   useEffect(() => {
     if (state.success && !isPending) {
+      setSelectedCanoe(null)
+      setSelectedSlot(null)
       setShowSuccessModal(true)
     }
   }, [state, isPending])
@@ -181,7 +183,7 @@ export function DashboardClient({
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in">
           <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full text-center space-y-4 animate-in zoom-in-95">
             <div className="text-4xl">🎉</div>
             <h2 className="text-lg font-black text-slate-900">Reserva Confirmada!</h2>
